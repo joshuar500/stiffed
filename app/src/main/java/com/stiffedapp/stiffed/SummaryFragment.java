@@ -69,6 +69,7 @@ public class SummaryFragment extends ListFragment implements OnItemClickListener
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        // nothing works
 //        LineChartView lineChartView = (LineChartView) view.findViewById(R.id.summary_chart);
 //        getListView().addHeaderView(lineChartView);
 
