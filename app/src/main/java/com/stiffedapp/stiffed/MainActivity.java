@@ -1,15 +1,17 @@
 package com.stiffedapp.stiffed;
 
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.AlertDialog;
+import android.support.v7.view.ContextThemeWrapper;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -19,13 +21,126 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.DatePicker;
+import android.widget.EditText;
+import android.widget.Toast;
 
+import com.github.clans.fab.FloatingActionButton;
 import com.github.clans.fab.FloatingActionMenu;
+import com.stiffedapp.stiffed.models.User;
+
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
-    FragmentPagerAdapter adapterViewPager;
+    private EditText getAddTip;
+    private DatePicker getDatePicker;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        // TODO: Update this
+        User user = new User();
+
+        if(user != null) {
+            System.out.println("User signed in");
+        } else {
+            System.out.println("User NOT signed in");
+            Intent intent = new Intent(this, EmailPasswordActivity.class);
+            startActivity(intent);
+        }
+
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        // Set up logo for actionbar
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        getSupportActionBar().setLogo(R.drawable.ic_logo_stiffed);
+        getSupportActionBar().setDisplayUseLogoEnabled(true);
+
+        // Setup Viewpager for tabed layout
+        ViewPager vpPager = (ViewPager) findViewById(R.id.pager);
+        vpPager.setAdapter(new MyFragmentPageAdapter(getSupportFragmentManager(),
+                MainActivity.this));
+
+        // Setup tabs and position them appropriately
+        TabLayout tabLayout = (TabLayout) findViewById(R.id.sliding_tabs);
+        tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
+        tabLayout.setTabMode(TabLayout.MODE_FIXED);
+        tabLayout.setupWithViewPager(vpPager);
+
+
+        ContextThemeWrapper context = new ContextThemeWrapper(this, R.style.MenuButtonsStyle);
+
+        // Floating action button with menu using 3rd party library
+        FloatingActionMenu fam = (FloatingActionMenu) findViewById(R.id.fab_menu);
+        FloatingActionButton fab1 = new FloatingActionButton(context);
+        fab1.setLabelText("Add Tip");
+        fab1.setImageResource(R.drawable.ic_fab_add);
+        fam.addMenuButton(fab1);
+
+        fab1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                LayoutInflater inflater = getLayoutInflater();
+                final View alertLayout = inflater.inflate(R.layout.layout_custom_addtip, null);
+
+                AlertDialog.Builder alert = new AlertDialog.Builder(MainActivity.this);
+                alert.setView(alertLayout);
+
+                alert.setCancelable(false);
+                alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Toast.makeText(getBaseContext(), "Cancel clicked", Toast.LENGTH_SHORT).show();
+                    }
+                });
+
+                alert.setPositiveButton("Add Tip", new DialogInterface.OnClickListener() {
+
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                        getAddTip = (EditText) alertLayout.findViewById(R.id.et_addedtips);
+
+                        // get date and format it to custom string
+                        getDatePicker = (DatePicker) alertLayout.findViewById(R.id.dp_addtips);
+                        int day = getDatePicker.getDayOfMonth();
+                        int month = getDatePicker.getMonth();
+                        int year = getDatePicker.getYear();
+                        Calendar calendar = Calendar.getInstance();
+                        calendar.set(year, month, day);
+                        SimpleDateFormat formatDate = new SimpleDateFormat("yyyy-MM-dd");
+                        final String dateString = formatDate.format(calendar.getTime());
+
+                        // TODO: add tip to database via API
+
+                        Toast.makeText(getBaseContext(), "Added tip!", Toast.LENGTH_SHORT).show();
+                    }
+                });
+                AlertDialog dialog = alert.create();
+                dialog.show();
+            }
+        });
+
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        drawer.setDrawerListener(toggle);
+        toggle.syncState();
+
+        //Disable "summary" in navigation menu
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this);
+        navigationView.getMenu().findItem(R.id.nav_summary).setEnabled(false);
+
+    }
 
     public class MyFragmentPageAdapter extends FragmentPagerAdapter {
         final int PAGE_COUNT = 2;
@@ -66,52 +181,6 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-
-        // Set up logo for actionbar
-        getSupportActionBar().setDisplayShowHomeEnabled(true);
-        getSupportActionBar().setLogo(R.drawable.ic_logo_stiffed);
-        getSupportActionBar().setDisplayUseLogoEnabled(true);
-
-        // Setup Viewpager for tabed layout
-        ViewPager vpPager = (ViewPager) findViewById(R.id.pager);
-        vpPager.setAdapter(new MyFragmentPageAdapter(getSupportFragmentManager(),
-                MainActivity.this));
-
-        // Setup tabs and position them appropriately
-        TabLayout tabLayout = (TabLayout) findViewById(R.id.sliding_tabs);
-        tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
-        tabLayout.setTabMode(TabLayout.MODE_FIXED);
-        tabLayout.setupWithViewPager(vpPager);
-
-
-        // Floating action button with menu using 3rd party library
-        FloatingActionMenu fab = (FloatingActionMenu) findViewById(R.id.fab_menu);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
-
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.setDrawerListener(toggle);
-        toggle.syncState();
-
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
-
-
-    }
-
-    @Override
     public void onBackPressed() {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
@@ -125,6 +194,12 @@ public class MainActivity extends AppCompatActivity
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
+
+
+        //TextView tvNavEmail = (TextView) findViewById(R.id.tv_navEmail);
+        //tvNavEmail.setText(user.getEmail());
+
+
         return true;
     }
 
@@ -136,35 +211,45 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+        if (id == R.id.action_signout) {
+            signOut();
         }
 
         return super.onOptionsItemSelected(item);
     }
 
+
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
+
         int id = item.getItemId();
 
-        if (id == R.id.nav_camera) {
-            // Handle the camera action
-        } else if (id == R.id.nav_gallery) {
+        if (id == R.id.nav_summary) {
 
-        } else if (id == R.id.nav_slideshow) {
+        } else if (id == R.id.nav_tips) {
+            Intent intent = new Intent(this, TipsAndPaychecks.class);
+            startActivity(intent);
+        } else if (id == R.id.nav_tip_outs) {
 
-        } else if (id == R.id.nav_manage) {
+        } else if (id == R.id.nav_earnings) {
 
-        } else if (id == R.id.nav_share) {
+        } else if (id == R.id.nav_reports) {
 
-        } else if (id == R.id.nav_send) {
+        } else if (id == R.id.nav_calendar) {
 
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    private void signOut() {
+        // TODO: sign user out
+        // send back to login screen
+        Intent intent = new Intent(this, EmailPasswordActivity.class);
+        startActivity(intent);
     }
 }

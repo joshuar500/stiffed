@@ -2,43 +2,34 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="10dp"
+    android:paddingLeft="15dp"
+    android:paddingTop="14dp"
+    android:paddingBottom="15dp"
+    android:paddingRight="15dp"
+    android:background="@drawable/border_bottom"
     >
 
     <TextView
         android:id="@+id/tvName"
-        android:layout_alignBaseline="@+id/ivUserIcon"
-        android:layout_toRightOf="@+id/ivUserIcon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:paddingLeft="10dp"
+        android:textSize="6pt"
+        android:paddingLeft="15dp"
         android:paddingRight="6dp"
-        android:text="Sarah"
+        android:text="TIPS THIS WEEK"
         android:textAppearance="?android:attr/textAppearanceLarge" />
-
-    <TextView
-        android:id="@+id/textView2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/tvName"
-        android:layout_toRightOf="@+id/tvName"
-        android:paddingRight="6dp"
-        android:text="from " />
 
     <TextView
         android:id="@+id/tvNumber"
+        android:textSize="6pt"
+        android:textAlignment="textEnd"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignBottom="@+id/tvName"
-        android:layout_toRightOf="@+id/textView2"
-        android:text="San Marco"
-        android:textAppearance="?android:attr/textAppearanceLarge" />
-
-    <ImageView
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentTop="true"
-        android:id="@+id/ivUserIcon"
-        android:layout_width="30dp"
-        android:layout_height="30dp" />
+        android:layout_toRightOf="@+id/tvName"
+        android:text="$200.00"
+        android:paddingRight="15dp"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:layout_alignParentEnd="true" />
 
 </RelativeLayout>

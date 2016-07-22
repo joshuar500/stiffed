@@ -4,4 +4,6 @@
     <color name="colorPrimaryDark">#AC3120</color>
     <color name="colorAccent">#F88B80</color>
     <color name="colorWhite">#FFFFFF</color>
+    <color name="progressbar">#fff</color>
+    <color name="secondprogressbar">#fff</color>
 </resources>

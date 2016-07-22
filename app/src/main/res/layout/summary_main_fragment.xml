@@ -10,7 +10,7 @@
             android:layout_height="match_parent"
             android:layout_alignParentTop="true"
             android:layout_centerHorizontal="true"
-            android:layout_marginTop="50dp"
+            android:layout_marginTop="47dp"
             android:listSelector="@android:color/transparent"
             android:cacheColorHint="@android:color/transparent"
             android:divider="@null"

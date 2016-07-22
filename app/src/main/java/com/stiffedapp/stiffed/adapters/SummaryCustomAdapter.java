@@ -1,4 +1,4 @@
-package com.stiffedapp.stiffed;
+package com.stiffedapp.stiffed.adapters;
 
 import java.util.ArrayList;
 
@@ -9,17 +9,18 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
-import lecho.lib.hellocharts.view.LineChartView;
+import com.stiffedapp.stiffed.R;
+import com.stiffedapp.stiffed.controllers.SummaryController;
 
-public class SummaryCustomAdapter extends ArrayAdapter<Summary> {
-    public SummaryCustomAdapter(Context context, ArrayList<Summary> summaries) {
+public class SummaryCustomAdapter extends ArrayAdapter<SummaryController> {
+    public SummaryCustomAdapter(Context context, ArrayList<SummaryController> summaries) {
         super(context, 0, summaries);
     }
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         // Get the data item for this position
-        Summary summary = getItem(position);
+        SummaryController summary = getItem(position);
         // Check if an existing view is being reused, otherwise inflate the view
         if (convertView == null) {
             convertView = LayoutInflater.from(getContext()).inflate(R.layout.summary_list_item, parent, false);

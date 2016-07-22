@@ -27,29 +27,12 @@
     <com.github.clans.fab.FloatingActionMenu
         android:id="@+id/fab_menu"
         fab:menu_icon="@drawable/fab_add"
-        android:layout_height="wrap_content"
+        android:layout_height="91dp"
         android:layout_width="wrap_content"
         android:layout_gravity="bottom|end"
         android:layout_marginRight="24dp"
         android:layout_marginBottom="24dp">
 
-        <com.github.clans.fab.FloatingActionButton
-            app:fab_size="mini"
-            android:layout_height="wrap_content"
-            android:layout_width="wrap_content"
-            android:layout_gravity="center"
-            android:id="@+id/add_tip"
-            android:src="@drawable/ic_fab_add"
-            fab:fab_label="Add Tip" />
-
-        <com.github.clans.fab.FloatingActionButton
-            app:fab_size="mini"
-            android:layout_height="wrap_content"
-            android:layout_width="wrap_content"
-            android:layout_gravity="center"
-            android:id="@+id/add_paycheck"
-            android:src="@drawable/ic_fab_add"
-            fab:fab_label="Add Paycheck" />
 
     </com.github.clans.fab.FloatingActionMenu>
 
