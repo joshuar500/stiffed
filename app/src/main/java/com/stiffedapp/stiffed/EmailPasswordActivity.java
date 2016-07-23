@@ -8,9 +8,25 @@ import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 
+import com.stiffedapp.stiffed.api.StiffedApi;
 import com.stiffedapp.stiffed.models.User;
+import com.stiffedapp.stiffed.net.ServiceGenerator;
+
+import org.json.JSONObject;
+
+import java.util.HashMap;
+
+import okhttp3.MediaType;
+import okhttp3.RequestBody;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
+import retrofit2.http.Headers;
 
 
 public class EmailPasswordActivity extends AppCompatActivity implements View.OnClickListener {
@@ -71,7 +87,38 @@ public class EmailPasswordActivity extends AppCompatActivity implements View.OnC
             return;
         }
 
-        //showProgressDialog();
+        showProgressDialog();
+
+        StiffedApi stiffedApi = ServiceGenerator.createService(StiffedApi.class);
+
+        HashMap<String, Object> credentials = new HashMap<>();
+        credentials.put("email", email);
+        credentials.put("password", password);
+
+        RequestBody body = RequestBody.create(MediaType.parse("application/json; charset=utf-8"),(new JSONObject(credentials)).toString());
+
+        Call<User> loggedIn = stiffedApi.login(body);
+
+        loggedIn.enqueue(new Callback<User>() {
+            @Override
+            public void onResponse(Call<User> call, Response<User> response) {
+                hideProgressDialog();
+
+                // check if success
+                if(response.code() == 200) {
+                    // continue to main activity
+                    finish();
+                } else {
+                    Toast.makeText(getBaseContext(), "Wrong username or password", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<User> call, Throwable t) {
+                hideProgressDialog();
+                Toast.makeText(getBaseContext(), "Please make sure you are connected to the Internet", Toast.LENGTH_SHORT).show();
+            }
+        });
 
     }
 
@@ -130,8 +177,6 @@ public class EmailPasswordActivity extends AppCompatActivity implements View.OnC
                 break;
             case R.id.email_sign_in_button:
                 signIn(mEmailField.getText().toString(), mPasswordField.getText().toString());
-                //TODO: remove this when functionality for signup/signin works
-                finish();
                 break;
             case R.id.sign_out_button:
                 signOut();
