@@ -1,6 +1,6 @@
 package com.stiffedapp.stiffed.controllers;
 
-import com.stiffedapp.stiffed.models.Tip;
+import com.stiffedapp.stiffed.beans.Tip;
 
 public class TipController {
 

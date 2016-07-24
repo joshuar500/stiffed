@@ -12,6 +12,7 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 
 import com.stiffedapp.stiffed.adapters.SummaryCustomAdapter;
+import com.stiffedapp.stiffed.beans.User;
 import com.stiffedapp.stiffed.controllers.SummaryController;
 
 import java.util.ArrayList;
@@ -21,12 +22,14 @@ import lecho.lib.hellocharts.model.Line;
 import lecho.lib.hellocharts.model.LineChartData;
 import lecho.lib.hellocharts.model.PointValue;
 import lecho.lib.hellocharts.view.LineChartView;
+import retrofit2.Call;
 
 public class SummaryFragment extends ListFragment implements OnItemClickListener {
 
     // Store instance variables
     private String title;
     private int page;
+    private String userid;
 
     public String[] list = {"hey","2","hey","hey","5","6","hey","4","5","6","3","hey","5","hey"};
     SummaryCustomAdapter theAdapter;
@@ -36,11 +39,12 @@ public class SummaryFragment extends ListFragment implements OnItemClickListener
     public SummaryFragment(){}
 
     // newInstance constructor for creating fragment with arguments
-    public static SummaryFragment newInstance(int page, String title) {
+    public static SummaryFragment newInstance(int page, String title, String userid) {
         SummaryFragment fragmentFirst = new SummaryFragment();
         Bundle args = new Bundle();
         args.putInt("someInt", page);
         args.putString("someTitle", title);
+        args.putString("userid", userid);
         fragmentFirst.setArguments(args);
         return fragmentFirst;
     }
@@ -50,6 +54,7 @@ public class SummaryFragment extends ListFragment implements OnItemClickListener
         super.onCreate(savedInstanceState);
         page = getArguments().getInt("someInt", 0);
         title = getArguments().getString("someTitle");
+        userid = getArguments().getString("userid");
     }
 
     @Nullable
@@ -74,9 +79,13 @@ public class SummaryFragment extends ListFragment implements OnItemClickListener
         if(headerView != null) this.getListView().addHeaderView(headerView);
 
         // Fill arraylist
-        summaryArrayList = SummaryController.getSummary();
+        summaryArrayList = SummaryController.getSummary("{'asdf':'asdf'}");
         theAdapter = new SummaryCustomAdapter(getContext(), summaryArrayList);
         setListAdapter(theAdapter);
+
+        System.out.println(userid);
+        System.out.println(userid);
+        System.out.println(userid);
 
         List<PointValue> values = new ArrayList<PointValue>();
         values.add(new PointValue(0, 0));

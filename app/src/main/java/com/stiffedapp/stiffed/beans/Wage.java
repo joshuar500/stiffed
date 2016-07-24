@@ -1,4 +1,4 @@
-package com.stiffedapp.stiffed.models;
+package com.stiffedapp.stiffed.beans;
 
 public class Wage {
     public String userID;

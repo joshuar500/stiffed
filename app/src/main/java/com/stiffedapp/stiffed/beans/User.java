@@ -1,13 +1,13 @@
-package com.stiffedapp.stiffed.models;
+package com.stiffedapp.stiffed.beans;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 public class User {
 
-    @SerializedName("id")
+    @SerializedName("uid")
     @Expose
-    private String id;
+    private String uid;
     @SerializedName("name")
     @Expose
     private String name;
@@ -17,9 +17,9 @@ public class User {
     @SerializedName("password")
     @Expose
     private String password;
-    @SerializedName("auth_token")
+    @SerializedName("token")
     @Expose
-    private String authToken;
+    private String token;
 
     /**
      *
@@ -27,16 +27,16 @@ public class User {
      * The id
      */
     public String getId() {
-        return id;
+        return uid;
     }
 
     /**
      *
-     * @param id
-     * The id
+     * @param uid
+     * The uid
      */
-    public void setId(String id) {
-        this.id = id;
+    public void setId(String uid) {
+        this.uid = uid;
     }
 
     /**
@@ -98,16 +98,16 @@ public class User {
      * @return
      * The authToken
      */
-    public String getAuthToken() {
-        return authToken;
+    public String getToken() {
+        return token;
     }
 
     /**
      *
-     * @param authToken
+     * @param token
      * The auth_token
      */
-    public void setAuthToken(String authToken) {
-        this.authToken = authToken;
+    public void setToken(String token) {
+        this.token = token;
     }
 }

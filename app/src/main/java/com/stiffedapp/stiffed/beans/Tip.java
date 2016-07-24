@@ -1,4 +1,4 @@
-package com.stiffedapp.stiffed.models;
+package com.stiffedapp.stiffed.beans;
 
 import java.util.HashMap;
 import java.util.Map;

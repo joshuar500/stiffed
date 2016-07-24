@@ -8,44 +8,30 @@ import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
 
-import com.stiffedapp.stiffed.api.StiffedApi;
-import com.stiffedapp.stiffed.models.User;
-import com.stiffedapp.stiffed.net.ServiceGenerator;
+import com.stiffedapp.stiffed.beans.User;
+import com.stiffedapp.stiffed.controllers.LoginController;
 
-import org.json.JSONObject;
-
-import java.util.HashMap;
-
-import okhttp3.MediaType;
-import okhttp3.RequestBody;
 import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
-import retrofit2.http.Headers;
 
 
-public class EmailPasswordActivity extends AppCompatActivity implements View.OnClickListener {
+public class LoginActivity extends AppCompatActivity implements View.OnClickListener {
 
     private ProgressDialog mProgressDialog;
 
-    private static final String TAG = "EmailPassword";
+    private static final String TAG = "LoginActivity";
 
     private TextView mStatusTextView;
     private TextView mDetailTextView;
     private EditText mEmailField;
     private EditText mPasswordField;
 
-
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_emailpassword);
+        setContentView(R.layout.activity_login);
+
 
         // Fix White Bar on top
         setTheme(R.style.AppTheme_NoActionBar);
@@ -86,43 +72,13 @@ public class EmailPasswordActivity extends AppCompatActivity implements View.OnC
         if (!validateForm()) {
             return;
         }
-
         showProgressDialog();
-
-        StiffedApi stiffedApi = ServiceGenerator.createService(StiffedApi.class);
-
-        HashMap<String, Object> credentials = new HashMap<>();
-        credentials.put("email", email);
-        credentials.put("password", password);
-
-        RequestBody body = RequestBody.create(MediaType.parse("application/json; charset=utf-8"),(new JSONObject(credentials)).toString());
-
-        Call<User> loggedIn = stiffedApi.login(body);
-
-        loggedIn.enqueue(new Callback<User>() {
-            @Override
-            public void onResponse(Call<User> call, Response<User> response) {
-                hideProgressDialog();
-
-                // check if success
-                if(response.code() == 200) {
-                    // continue to main activity
-                    finish();
-                } else {
-                    Toast.makeText(getBaseContext(), "Wrong username or password", Toast.LENGTH_SHORT).show();
-                }
-            }
-
-            @Override
-            public void onFailure(Call<User> call, Throwable t) {
-                hideProgressDialog();
-                Toast.makeText(getBaseContext(), "Please make sure you are connected to the Internet", Toast.LENGTH_SHORT).show();
-            }
-        });
-
+        LoginController loginController = new LoginController();
+        loginController.login(email, password, this);
     }
 
     private void signOut() {
+        // TODO
         updateUI(null);
     }
 

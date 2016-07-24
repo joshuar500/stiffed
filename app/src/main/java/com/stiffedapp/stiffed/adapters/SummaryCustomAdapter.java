@@ -13,6 +13,7 @@ import com.stiffedapp.stiffed.R;
 import com.stiffedapp.stiffed.controllers.SummaryController;
 
 public class SummaryCustomAdapter extends ArrayAdapter<SummaryController> {
+
     public SummaryCustomAdapter(Context context, ArrayList<SummaryController> summaries) {
         super(context, 0, summaries);
     }

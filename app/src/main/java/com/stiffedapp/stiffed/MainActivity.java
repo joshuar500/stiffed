@@ -3,11 +3,14 @@ package com.stiffedapp.stiffed;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.content.SharedPreferencesCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.view.ContextThemeWrapper;
@@ -27,7 +30,7 @@ import android.widget.Toast;
 
 import com.github.clans.fab.FloatingActionButton;
 import com.github.clans.fab.FloatingActionMenu;
-import com.stiffedapp.stiffed.models.User;
+import com.stiffedapp.stiffed.beans.User;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -38,21 +41,22 @@ public class MainActivity extends AppCompatActivity
 
     private EditText getAddTip;
     private DatePicker getDatePicker;
+    private static final int REQUEST_GET_USER_ID = 0;
+    private String userID;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // TODO: Update this
-        User user = new User();
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        userID = preferences.getString("userid", "");
 
-        if(user != null) {
-            System.out.println("User signed in");
+        if(userID != null || userID.equals("")) {
+            // get user details and update
         } else {
-            System.out.println("User NOT signed in");
-            Intent intent = new Intent(this, EmailPasswordActivity.class);
-            startActivity(intent);
+            Intent intent = new Intent(this, LoginActivity.class);
+            startActivityForResult(intent, REQUEST_GET_USER_ID);
         }
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -142,6 +146,13 @@ public class MainActivity extends AppCompatActivity
 
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        userID = data.getStringExtra("userid");
+        System.out.println("MAIN ONACTIVITYRESULT: " + userID);
+    }
+
     public class MyFragmentPageAdapter extends FragmentPagerAdapter {
         final int PAGE_COUNT = 2;
         private String tabTitles[] = new String[] { "Summary", "Feed" };
@@ -161,7 +172,7 @@ public class MainActivity extends AppCompatActivity
         public Fragment getItem(int position) {
             switch (position) {
                 case 0:
-                    return SummaryFragment.newInstance(0, "Summary");
+                    return SummaryFragment.newInstance(0, "Summary", userID);
                 case 1:
                     return FeedFragment.newInstance(0, "Feed");
             }
@@ -249,7 +260,17 @@ public class MainActivity extends AppCompatActivity
     private void signOut() {
         // TODO: sign user out
         // send back to login screen
-        Intent intent = new Intent(this, EmailPasswordActivity.class);
+        Intent intent = new Intent(this, LoginActivity.class);
         startActivity(intent);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        SharedPreferences preferences = getPreferences(MODE_PRIVATE);
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putString("userid", userID);
+        editor.apply();
     }
 }
