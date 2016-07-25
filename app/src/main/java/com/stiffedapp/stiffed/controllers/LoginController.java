@@ -43,8 +43,7 @@ public class LoginController {
 
                 // check if success
                 if(response.code() == 200) {
-                    activity.setResult(Activity.RESULT_OK, new Intent().putExtra("userid", response.body().getId()));
-                    System.out.println("CONTROLLER: " + response.body().getId());
+                    activity.setResult(Activity.RESULT_OK, new Intent().putExtra("userid", response.body().getId()).putExtra("authtoken", response.body().getToken()));
                     activity.finish();
                 } else {
                     Toast.makeText(activity.getBaseContext(), "Wrong username or password", Toast.LENGTH_SHORT).show();

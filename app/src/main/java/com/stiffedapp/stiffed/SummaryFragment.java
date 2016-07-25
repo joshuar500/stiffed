@@ -30,6 +30,7 @@ public class SummaryFragment extends ListFragment implements OnItemClickListener
     private String title;
     private int page;
     private String userid;
+    private String authToken;
 
     public String[] list = {"hey","2","hey","hey","5","6","hey","4","5","6","3","hey","5","hey"};
     SummaryCustomAdapter theAdapter;
@@ -39,12 +40,13 @@ public class SummaryFragment extends ListFragment implements OnItemClickListener
     public SummaryFragment(){}
 
     // newInstance constructor for creating fragment with arguments
-    public static SummaryFragment newInstance(int page, String title, String userid) {
+    public static SummaryFragment newInstance(int page, String title, String userid, String authToken) {
         SummaryFragment fragmentFirst = new SummaryFragment();
         Bundle args = new Bundle();
         args.putInt("someInt", page);
         args.putString("someTitle", title);
         args.putString("userid", userid);
+        args.putString("authtoken", authToken);
         fragmentFirst.setArguments(args);
         return fragmentFirst;
     }
@@ -55,6 +57,7 @@ public class SummaryFragment extends ListFragment implements OnItemClickListener
         page = getArguments().getInt("someInt", 0);
         title = getArguments().getString("someTitle");
         userid = getArguments().getString("userid");
+        authToken = getArguments().getString("authtoken");
     }
 
     @Nullable
@@ -79,13 +82,9 @@ public class SummaryFragment extends ListFragment implements OnItemClickListener
         if(headerView != null) this.getListView().addHeaderView(headerView);
 
         // Fill arraylist
-        summaryArrayList = SummaryController.getSummary("{'asdf':'asdf'}");
+        summaryArrayList = SummaryController.getSummary(userid, authToken);
         theAdapter = new SummaryCustomAdapter(getContext(), summaryArrayList);
         setListAdapter(theAdapter);
-
-        System.out.println(userid);
-        System.out.println(userid);
-        System.out.println(userid);
 
         List<PointValue> values = new ArrayList<PointValue>();
         values.add(new PointValue(0, 0));

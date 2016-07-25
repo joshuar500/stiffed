@@ -31,6 +31,7 @@ import android.widget.Toast;
 import com.github.clans.fab.FloatingActionButton;
 import com.github.clans.fab.FloatingActionMenu;
 import com.stiffedapp.stiffed.beans.User;
+import com.stiffedapp.stiffed.controllers.TipController;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -40,24 +41,27 @@ public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     private EditText getAddTip;
+    private Double newTip;
     private DatePicker getDatePicker;
     private static final int REQUEST_GET_USER_ID = 0;
     private String userID;
+    private String authToken;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        SharedPreferences preferences = getSharedPreferences("AUTH_USER", MODE_PRIVATE);
         userID = preferences.getString("userid", "");
+        authToken = preferences.getString("authtoken", "");
 
-        if(userID != null || userID.equals("")) {
-            // get user details and update
-        } else {
+        if(userID == null || userID.equals("")) {
             Intent intent = new Intent(this, LoginActivity.class);
             startActivityForResult(intent, REQUEST_GET_USER_ID);
         }
+
+        System.out.println(userID + "  |  " + authToken);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -79,7 +83,7 @@ public class MainActivity extends AppCompatActivity
         tabLayout.setupWithViewPager(vpPager);
 
 
-        ContextThemeWrapper context = new ContextThemeWrapper(this, R.style.MenuButtonsStyle);
+        final ContextThemeWrapper context = new ContextThemeWrapper(this, R.style.MenuButtonsStyle);
 
         // Floating action button with menu using 3rd party library
         FloatingActionMenu fam = (FloatingActionMenu) findViewById(R.id.fab_menu);
@@ -94,7 +98,7 @@ public class MainActivity extends AppCompatActivity
                 LayoutInflater inflater = getLayoutInflater();
                 final View alertLayout = inflater.inflate(R.layout.layout_custom_addtip, null);
 
-                AlertDialog.Builder alert = new AlertDialog.Builder(MainActivity.this);
+                final AlertDialog.Builder alert = new AlertDialog.Builder(MainActivity.this);
                 alert.setView(alertLayout);
 
                 alert.setCancelable(false);
@@ -112,6 +116,7 @@ public class MainActivity extends AppCompatActivity
                     public void onClick(DialogInterface dialog, int which) {
 
                         getAddTip = (EditText) alertLayout.findViewById(R.id.et_addedtips);
+                        newTip = Double.parseDouble(getAddTip.getText().toString());
 
                         // get date and format it to custom string
                         getDatePicker = (DatePicker) alertLayout.findViewById(R.id.dp_addtips);
@@ -123,9 +128,8 @@ public class MainActivity extends AppCompatActivity
                         SimpleDateFormat formatDate = new SimpleDateFormat("yyyy-MM-dd");
                         final String dateString = formatDate.format(calendar.getTime());
 
-                        // TODO: add tip to database via API
-
-                        Toast.makeText(getBaseContext(), "Added tip!", Toast.LENGTH_SHORT).show();
+                        TipController tipController = new TipController();
+                        tipController.addNewTip(userID, newTip, dateString, MainActivity.this);
                     }
                 });
                 AlertDialog dialog = alert.create();
@@ -150,7 +154,7 @@ public class MainActivity extends AppCompatActivity
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         userID = data.getStringExtra("userid");
-        System.out.println("MAIN ONACTIVITYRESULT: " + userID);
+        authToken = data.getStringExtra("authtoken");
     }
 
     public class MyFragmentPageAdapter extends FragmentPagerAdapter {
@@ -172,7 +176,7 @@ public class MainActivity extends AppCompatActivity
         public Fragment getItem(int position) {
             switch (position) {
                 case 0:
-                    return SummaryFragment.newInstance(0, "Summary", userID);
+                    return SummaryFragment.newInstance(0, "Summary", userID, authToken);
                 case 1:
                     return FeedFragment.newInstance(0, "Feed");
             }
@@ -268,9 +272,10 @@ public class MainActivity extends AppCompatActivity
     protected void onPause() {
         super.onPause();
 
-        SharedPreferences preferences = getPreferences(MODE_PRIVATE);
+        SharedPreferences preferences = getSharedPreferences("AUTH_USER", MODE_PRIVATE);
         SharedPreferences.Editor editor = preferences.edit();
         editor.putString("userid", userID);
+        editor.putString("authtoken", authToken);
         editor.apply();
     }
 }
