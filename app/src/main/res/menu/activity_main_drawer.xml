@@ -7,46 +7,13 @@
             android:icon="@drawable/ic_list"
             android:title="Summary" />
         <item
-            android:id="@+id/nav_tips"
-            android:icon="@drawable/ic_add_box"
-            android:title="Tips &amp; Paychecks" />
-        <item
-            android:id="@+id/nav_tip_outs"
-            android:icon="@drawable/ic_delete"
-            android:title="Tip Outs" />
-        <item
             android:id="@+id/nav_earnings"
             android:icon="@drawable/ic_attach_money"
             android:title="Earnings" />
 
-        <item
-            android:id="@+id/nav_reports"
-            android:icon="@drawable/ic_pie_chart"
-            android:title="Reports" />
-
-        <item
-            android:id="@+id/nav_calendar"
-            android:icon="@drawable/ic_perm_contact_calendar"
-            android:title="Calendar" />
-
-        <item
-            android:id="@+id/nav_friend_reports"
-            android:icon="@drawable/ic_forum"
-            android:title="Friend Reports" />
-
-        <item
-            android:id="@+id/nav_friends"
-            android:icon="@drawable/ic_people"
-            android:title="Friends" />
-
-        <item
-            android:id="@+id/nav_feed"
-            android:icon="@drawable/ic_recent_actors"
-            android:title="Feed" />
-
     </group>
 
-    <item android:title="Connect">
+    <item android:title="Other">
         <menu>
 
             <item

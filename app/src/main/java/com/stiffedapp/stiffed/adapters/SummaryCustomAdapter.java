@@ -30,8 +30,6 @@ public class SummaryCustomAdapter extends ArrayAdapter<SummaryController> {
         TextView tvName = (TextView) convertView.findViewById(R.id.tvName);
         TextView tvSummary= (TextView) convertView.findViewById(R.id.tvNumber);
         // Populate the data into the template view using the data object
-        tvName.setText(summary.sName);
-        tvSummary.setText(summary.sNumber.toString());
         // Return the completed view to render on screen
         return convertView;
     }

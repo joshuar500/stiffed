@@ -21,14 +21,9 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".TipsAndPaychecks"
-            android:label="@string/title_activity_tips_and_paychecks"
-            android:theme="@style/AppTheme.NoActionBar"
-            android:parentActivityName=".MainActivity"></activity>
-        <activity
             android:name=".LoginActivity"
             android:label="@string/title_activity_email_password"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
     </application>
 
 </manifest>

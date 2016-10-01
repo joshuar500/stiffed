@@ -1,11 +1,15 @@
 package com.stiffedapp.stiffed.controllers;
 
 import android.app.Activity;
+import android.app.Fragment;
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.Intent;
 import android.widget.Toast;
 
 import com.stiffedapp.stiffed.MainActivity;
+import com.stiffedapp.stiffed.R;
 import com.stiffedapp.stiffed.SummaryFragment;
 import com.stiffedapp.stiffed.api.StiffedApi;
 import com.stiffedapp.stiffed.beans.Tip;
@@ -30,13 +34,12 @@ public class TipController {
         this.stiffedApi = ServiceGenerator.createService(StiffedApi.class);
     }
 
-    public void addNewTip(String userID, Double amount, String date, final MainActivity activity) {
+    public void addNewTip(String userID, final Double amount, String date, final MainActivity activity) {
         HashMap<String, Object> credentials = new HashMap<>();
         credentials.put("amount", amount);
         credentials.put("tip_date", date);
 
         RequestBody body = RequestBody.create(MediaType.parse("application/json; charset=utf-8"),(new JSONObject(credentials)).toString());
-
         Call<Tip> addTip = stiffedApi.addTip(userID, body);
 
         addTip.enqueue(new Callback<Tip>() {
@@ -45,6 +48,7 @@ public class TipController {
 
                 // check if success
                 if(response.code() == 200) {
+                    Toast.makeText(activity.getBaseContext(), "Tip Added: " + amount, Toast.LENGTH_LONG).show();
                 } else {
                     Toast.makeText(activity.getBaseContext(), "Something went wrong", Toast.LENGTH_SHORT).show();
                 }

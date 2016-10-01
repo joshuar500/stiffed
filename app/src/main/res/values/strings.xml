@@ -24,7 +24,7 @@
         <item>Uranus</item>
         <item>Neptune</item>
     </string-array>
-    <string name="title_activity_tips_and_paychecks">Tips And Paychecks</string>
+    <string name="title_activity_earnings">Earnings</string>
     <string name="title_activity_email_password">Email And Password</string>
 
 </resources>

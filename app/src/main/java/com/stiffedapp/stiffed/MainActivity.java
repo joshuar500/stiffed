@@ -5,12 +5,10 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.content.SharedPreferencesCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.view.ContextThemeWrapper;
@@ -30,10 +28,10 @@ import android.widget.Toast;
 
 import com.github.clans.fab.FloatingActionButton;
 import com.github.clans.fab.FloatingActionMenu;
-import com.stiffedapp.stiffed.beans.User;
 import com.stiffedapp.stiffed.controllers.TipController;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 
 
@@ -46,6 +44,7 @@ public class MainActivity extends AppCompatActivity
     private static final int REQUEST_GET_USER_ID = 0;
     private String userID;
     private String authToken;
+    ArrayList<Double> summaryArrayList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,8 +60,6 @@ public class MainActivity extends AppCompatActivity
             startActivityForResult(intent, REQUEST_GET_USER_ID);
         }
 
-        System.out.println(userID + "  |  " + authToken);
-
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -71,17 +68,15 @@ public class MainActivity extends AppCompatActivity
         getSupportActionBar().setLogo(R.drawable.ic_logo_stiffed);
         getSupportActionBar().setDisplayUseLogoEnabled(true);
 
-        // Setup Viewpager for tabed layout
-        ViewPager vpPager = (ViewPager) findViewById(R.id.pager);
-        vpPager.setAdapter(new MyFragmentPageAdapter(getSupportFragmentManager(),
-                MainActivity.this));
+        // Setup Viewpager for tabbed layout
+        final ViewPager vpPager = (ViewPager) findViewById(R.id.pager);
+        vpPager.setAdapter(new MyFragmentPageAdapter(getSupportFragmentManager(), MainActivity.this));
 
         // Setup tabs and position them appropriately
         TabLayout tabLayout = (TabLayout) findViewById(R.id.sliding_tabs);
         tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
         tabLayout.setTabMode(TabLayout.MODE_FIXED);
         tabLayout.setupWithViewPager(vpPager);
-
 
         final ContextThemeWrapper context = new ContextThemeWrapper(this, R.style.MenuButtonsStyle);
 
@@ -130,6 +125,7 @@ public class MainActivity extends AppCompatActivity
 
                         TipController tipController = new TipController();
                         tipController.addNewTip(userID, newTip, dateString, MainActivity.this);
+                        vpPager.getAdapter().notifyDataSetChanged();
                     }
                 });
                 AlertDialog dialog = alert.create();
@@ -147,7 +143,6 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
         navigationView.getMenu().findItem(R.id.nav_summary).setEnabled(false);
-
     }
 
     @Override
@@ -176,11 +171,16 @@ public class MainActivity extends AppCompatActivity
         public Fragment getItem(int position) {
             switch (position) {
                 case 0:
-                    return SummaryFragment.newInstance(0, "Summary", userID, authToken);
+                    return SummaryFragment.newInstance(0, "Summary", userID, authToken, summaryArrayList);
                 case 1:
                     return FeedFragment.newInstance(0, "Feed");
             }
             return null;
+        }
+
+        @Override
+        public int getItemPosition(Object object) {
+            return POSITION_NONE;
         }
 
         @Override
@@ -207,14 +207,7 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
-
-
-        //TextView tvNavEmail = (TextView) findViewById(R.id.tv_navEmail);
-        //tvNavEmail.setText(user.getEmail());
-
-
         return true;
     }
 
@@ -243,16 +236,7 @@ public class MainActivity extends AppCompatActivity
 
         if (id == R.id.nav_summary) {
 
-        } else if (id == R.id.nav_tips) {
-            Intent intent = new Intent(this, TipsAndPaychecks.class);
-            startActivity(intent);
-        } else if (id == R.id.nav_tip_outs) {
-
         } else if (id == R.id.nav_earnings) {
-
-        } else if (id == R.id.nav_reports) {
-
-        } else if (id == R.id.nav_calendar) {
 
         }
 
