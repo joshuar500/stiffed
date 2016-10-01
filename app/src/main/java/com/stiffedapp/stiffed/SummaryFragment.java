@@ -2,6 +2,7 @@ package com.stiffedapp.stiffed;
 
 
 
+import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -63,6 +64,7 @@ public class SummaryFragment extends ListFragment implements OnItemClickListener
         swipeRefreshLayout = (SwipeRefreshLayout) inflater.inflate(R.layout.summary_main_fragment, container, false);
         swipeRefreshLayout.addView(listFragmentView, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
         swipeRefreshLayout.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+        Log.i(LOG_TAG, "swiperefreshlayout: " + swipeRefreshLayout.getRootView().toString());
         return swipeRefreshLayout;
     }
 
@@ -87,6 +89,7 @@ public class SummaryFragment extends ListFragment implements OnItemClickListener
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        Log.i(LOG_TAG, "onActivityCreated");
     }
 
     private void createUI(){
@@ -97,6 +100,7 @@ public class SummaryFragment extends ListFragment implements OnItemClickListener
         // fill the summary list and data chart
         SummaryController summaryController = new SummaryController();
         summaryController.summaryTips(userid, authToken, this);
+        Log.i(LOG_TAG, "createUI");
     }
 
     private class UpdateUITask extends AsyncTask<Void, Void, Void> {

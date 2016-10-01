@@ -7,6 +7,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.util.Log;
 import android.widget.Adapter;
 import android.widget.ArrayAdapter;
 import android.widget.ListAdapter;
@@ -40,6 +41,7 @@ import retrofit2.Response;
 
 public class SummaryController {
     private StiffedApi stiffedApi;
+    private static final String LOG_TAG = SummaryController.class.getSimpleName();
 
     public SummaryController() {
         this.stiffedApi = ServiceGenerator.createService(StiffedApi.class);
@@ -76,9 +78,10 @@ public class SummaryController {
                     ArrayAdapter<Double> oldAdapter = (ArrayAdapter<Double>) listFragment.getListAdapter();
                     oldAdapter.clear();
                 }
+
                 ListAdapter adapter = new ArrayAdapter<>(listFragment.getContext(), R.layout.summary_list_item, R.id.tvNumber, summaries);
                 listFragment.setListAdapter(adapter);
-
+                Log.i(LOG_TAG, "listAdapter count: " + listFragment.getListAdapter().getCount());
                 // populate chart
                 // TODO: This should be the last six months. Currently it is all 4 summary entries (tips this week, wages this week, etc.)
                 List<PointValue> values = new ArrayList<>();
@@ -96,7 +99,6 @@ public class SummaryController {
                 data.setLines(lines);
                 LineChartView chartView = (LineChartView) listFragment.getActivity().findViewById(R.id.summary_chart);
                 chartView.setLineChartData(data);
-
             }
 
             @Override

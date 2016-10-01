@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
@@ -12,6 +13,7 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.view.ContextThemeWrapper;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -35,8 +37,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 
 
-public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     private EditText getAddTip;
     private Double newTip;
@@ -45,6 +46,8 @@ public class MainActivity extends AppCompatActivity
     private String userID;
     private String authToken;
     ArrayList<Double> summaryArrayList;
+
+    private static final String LOG_TAG = MainActivity.class.getSimpleName();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,7 +73,7 @@ public class MainActivity extends AppCompatActivity
 
         // Setup Viewpager for tabbed layout
         final ViewPager vpPager = (ViewPager) findViewById(R.id.pager);
-        vpPager.setAdapter(new MyFragmentPageAdapter(getSupportFragmentManager(), MainActivity.this));
+        vpPager.setAdapter(new MyFragmentPagerAdapter(getSupportFragmentManager(), MainActivity.this));
 
         // Setup tabs and position them appropriately
         TabLayout tabLayout = (TabLayout) findViewById(R.id.sliding_tabs);
@@ -143,6 +146,8 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
         navigationView.getMenu().findItem(R.id.nav_summary).setEnabled(false);
+
+        Log.i(LOG_TAG, "vppager: " + vpPager.toString());
     }
 
     @Override
@@ -150,49 +155,6 @@ public class MainActivity extends AppCompatActivity
         super.onActivityResult(requestCode, resultCode, data);
         userID = data.getStringExtra("userid");
         authToken = data.getStringExtra("authtoken");
-    }
-
-    public class MyFragmentPageAdapter extends FragmentPagerAdapter {
-        final int PAGE_COUNT = 2;
-        private String tabTitles[] = new String[] { "Summary", "Feed" };
-        private Context context;
-
-        public MyFragmentPageAdapter(FragmentManager fm, Context context) {
-            super(fm);
-            this.context = context;
-        }
-
-        @Override
-        public int getCount() {
-            return PAGE_COUNT;
-        }
-
-        @Override
-        public Fragment getItem(int position) {
-            switch (position) {
-                case 0:
-                    return SummaryFragment.newInstance(0, "Summary", userID, authToken, summaryArrayList);
-                case 1:
-                    return FeedFragment.newInstance(0, "Feed");
-            }
-            return null;
-        }
-
-        @Override
-        public int getItemPosition(Object object) {
-            return POSITION_NONE;
-        }
-
-        @Override
-        public CharSequence getPageTitle(int position) {
-            switch (position) {
-                case 0:
-                    return "Summary";
-                case 1:
-                    return "Feed";
-            }
-            return null;
-        }
     }
 
     @Override
@@ -255,11 +217,56 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onPause() {
         super.onPause();
-
         SharedPreferences preferences = getSharedPreferences("AUTH_USER", MODE_PRIVATE);
         SharedPreferences.Editor editor = preferences.edit();
         editor.putString("userid", userID);
         editor.putString("authtoken", authToken);
         editor.apply();
     }
+
+    public class MyFragmentPagerAdapter extends FragmentPagerAdapter {
+        final int PAGE_COUNT = 2;
+        private String tabTitles[] = new String[] { "Summary", "Feed" };
+        private Context context;
+
+        public MyFragmentPagerAdapter(FragmentManager fm, Context context) {
+            super(fm);
+            this.context = context;
+        }
+
+        @Override
+        public int getCount() {
+            return PAGE_COUNT;
+        }
+
+        @Override
+        public Fragment getItem(int position) {
+            switch (position) {
+                case 0:
+                    Log.i(LOG_TAG, "position: " + position);
+                    return SummaryFragment.newInstance(0, "Summary", userID, authToken, summaryArrayList);
+                case 1:
+                    Log.i(LOG_TAG, "position: " + position);
+                    return FeedFragment.newInstance(0, "Feed");
+            }
+            return null;
+        }
+
+        @Override
+        public int getItemPosition(Object object) {
+            return POSITION_NONE;
+        }
+
+        @Override
+        public CharSequence getPageTitle(int position) {
+            switch (position) {
+                case 0:
+                    return "Summary";
+                case 1:
+                    return "Feed";
+            }
+            return null;
+        }
+    }
+
 }
