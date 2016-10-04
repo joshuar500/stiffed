@@ -2,7 +2,9 @@ package com.stiffedapp.stiffed.adapters;
 
 import java.util.ArrayList;
 
+import android.app.Activity;
 import android.content.Context;
+import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,17 +13,19 @@ import android.widget.TextView;
 
 import com.stiffedapp.stiffed.R;
 import com.stiffedapp.stiffed.controllers.SummaryController;
+import com.stiffedapp.stiffed.models.SummaryModel;
 
-public class SummaryCustomAdapter extends ArrayAdapter<SummaryController> {
+public class SummaryCustomAdapter extends ArrayAdapter<SummaryModel>{
 
-    public SummaryCustomAdapter(Context context, ArrayList<SummaryController> summaries) {
-        super(context, 0, summaries);
+    ArrayList<SummaryModel> summary;
+
+    public SummaryCustomAdapter(Context context, ArrayList<SummaryModel> summary) {
+        super(context, 0, summary);
     }
 
-    @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         // Get the data item for this position
-        SummaryController summary = getItem(position);
+        SummaryModel sModel = getItem(position);
         // Check if an existing view is being reused, otherwise inflate the view
         if (convertView == null) {
             convertView = LayoutInflater.from(getContext()).inflate(R.layout.summary_list_item, parent, false);
@@ -31,6 +35,8 @@ public class SummaryCustomAdapter extends ArrayAdapter<SummaryController> {
         TextView tvSummary= (TextView) convertView.findViewById(R.id.tvNumber);
         // Populate the data into the template view using the data object
         // Return the completed view to render on screen
+        tvName.setText(sModel.str);
+        tvSummary.setText(sModel.dbl.toString());
         return convertView;
     }
 }
