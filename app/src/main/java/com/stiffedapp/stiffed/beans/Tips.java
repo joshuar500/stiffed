@@ -14,7 +14,4 @@ public class Tips {
         return tips;
     }
 
-    public void setTips(List<Tip> tips) {
-        this.tips = tips;
-    }
 }

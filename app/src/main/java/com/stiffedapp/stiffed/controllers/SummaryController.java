@@ -9,6 +9,7 @@ import com.stiffedapp.stiffed.R;
 import com.stiffedapp.stiffed.SummaryFragment;
 import com.stiffedapp.stiffed.adapters.SummaryCustomAdapter;
 import com.stiffedapp.stiffed.api.StiffedApi;
+import com.stiffedapp.stiffed.beans.Summary;
 import com.stiffedapp.stiffed.beans.Tip;
 import com.stiffedapp.stiffed.beans.Tips;
 import com.stiffedapp.stiffed.beans.User;
@@ -20,6 +21,7 @@ import org.joda.time.DateTimeZone;
 import org.joda.time.format.DateTimeFormat;
 import org.json.JSONObject;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -47,42 +49,54 @@ public class SummaryController {
         this.stiffedApi = ServiceGenerator.createService(StiffedApi.class);
     }
 
-    public void getSummary(final String uid, final String authToken, final String title, final String start_date, final String end_date, final ArrayList<SummaryModel> summary, final SummaryFragment listFragment, final List<PointValue> values) {
-
-        HashMap<String, Object> paramz = new HashMap<>();
-        paramz.put("start_date", start_date);
-        paramz.put("end_date", end_date);
+    public void getSummary(final String uid, final String authToken, final ArrayList<SummaryModel> summary, final SummaryFragment listFragment) {
 
         StiffedApi stiffedApi = ServiceGenerator.createService(StiffedApi.class, authToken);
-        RequestBody body = RequestBody.create(MediaType.parse("application/json; charset=utf-8"),(new JSONObject(paramz)).toString());
 
-        Call<Tips> getTipsByDate = stiffedApi.getTipsByDate(uid, body);
+        Call<Summary> getSummaryCall = stiffedApi.getSummary(uid);
 
-        getTipsByDate.enqueue(new Callback<Tips>() {
+        getSummaryCall.enqueue(new Callback<Summary>() {
             @Override
-            public void onResponse(Call<Tips> call, Response<Tips> response) {
-                Log.i(LOG_TAG, "getSummary Response message: " + response.message());
-                Log.i(LOG_TAG, "getSummary Response body: " + response.raw().body());
-                // populate summary
-                List<Tip> tips = response.body().getTips();
+            public void onResponse(Call<Summary> call, Response<Summary> response) {
+
+                Log.d(LOG_TAG, "response: " + response.body());
+
                 if(response.code() != 200) {
                     Toast.makeText(listFragment.getActivity().getBaseContext(), "Something is wrong (cant get tips)", Toast.LENGTH_SHORT).show();
+                    // TODO: Close application
                 }
 
-                Double addedTips = 0.0;
-                for (Tip tip : tips) {
-                    addedTips += tip.getAmount();
+                List<Tip> thisWeek = response.body().getThisWeek();
+                List<Tip> lastWeek = response.body().getLastWeek();
+
+                Double thisWeeksTips = 0.0;
+                for (Tip tip : thisWeek) {
+                    thisWeeksTips += tip.getAmount();
+                }
+                Double lastWeeksTips = 0.0;
+                for (Tip tip : lastWeek) {
+                    lastWeeksTips += tip.getAmount();
                 }
 
-                if (addedTips != null && summary != null) {
-                    summary.add(new SummaryModel(title, addedTips));
+                if (thisWeeksTips != null && summary != null) {
+                    summary.add(new SummaryModel("This Week", thisWeeksTips));
+                    summary.add(new SummaryModel("Last Week", lastWeeksTips));
                     SummaryCustomAdapter adapter = new SummaryCustomAdapter(listFragment.getContext(), summary);
                     listFragment.setListAdapter(adapter);
-                    Log.i(LOG_TAG, "listAdapter count: " + listFragment.getListAdapter().getCount());
                 }
 
                 // populate chart
                 //TODO: this needs to be 6 months, currently doing every tip
+                // get dates for 6 months chart
+                Calendar cal = Calendar.getInstance();  //Get current date/month i.e 27 Feb, 2012
+                cal.add(Calendar.MONTH, -6);   //Go to date, 6 months ago 27 July, 2011
+                cal.set(Calendar.DAY_OF_MONTH, 1);
+                Date sixMonthsAgo = cal.getTime();
+                SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+                String formatSixMonthsAgo = formatter.format(sixMonthsAgo);
+                Log.i(LOG_TAG, "6 months ago: " + formatSixMonthsAgo);
+                // fill chart with correct values
+                List<PointValue> values = new ArrayList<>();
                 if (values != null) {
 
                     int i = 0;
@@ -98,7 +112,7 @@ public class SummaryController {
                     Double october = 0.0;
                     Double november = 0.0;
                     Double december = 0.0;
-                    for (Tip tip : tips) {
+                    for (Tip tip : thisWeek) {
                         // create dates to check
                         Date date = DateTime.parse(tip.getTipDate(), DateTimeFormat.forPattern("EEE, dd MMM YYYY HH:mm:ss zzz").withLocale(Locale.US)).toDate();
                         DateTime dateTime = new DateTime(date);
@@ -161,35 +175,8 @@ public class SummaryController {
             }
 
             @Override
-            public void onFailure(Call<Tips> call, Throwable t) {
+            public void onFailure(Call<Summary> call, Throwable t) {
                 Log.i(LOG_TAG, "getSummary Failed to make call: " + call.toString());
-                t.printStackTrace();
-            }
-        });
-    }
-
-    public void summaryTips(final String uid, final String authToken, final SummaryFragment listFragment){
-        final ArrayList<SummaryModel> summary = new ArrayList<>();
-        final ArrayList<Double> summaries = new ArrayList<>();
-
-        StiffedApi stiffedApi = ServiceGenerator.createService(StiffedApi.class, authToken);
-        Call<Tips> weeklyTips = stiffedApi.weeklyTips(uid);
-        if(uid == null || uid.equals("")){
-            summaries.add(522.08);
-        }
-
-        weeklyTips.enqueue(new Callback<Tips>() {
-            @Override
-            public void onResponse(Call<Tips> call, Response<Tips> response) {
-                Log.i(LOG_TAG, "Response message: " + response.message());
-                Log.i(LOG_TAG, "Response body: " + response.raw().body());
-
-            }
-
-            @Override
-            public void onFailure(Call<Tips> call, Throwable t) {
-                // This should be a log
-                Log.i(LOG_TAG, "Failed to make call: " + call.toString());
                 t.printStackTrace();
             }
         });

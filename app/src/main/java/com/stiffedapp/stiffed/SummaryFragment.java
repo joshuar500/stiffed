@@ -134,19 +134,8 @@ public class SummaryFragment extends ListFragment implements OnItemClickListener
         SummaryController summaryController = new SummaryController();
         // fill the summary list and data chart
         final ArrayList<SummaryModel> summary = new ArrayList<>();
-        summaryController.getSummary(userid, authToken, "LAST WEEK", endLastWeekDate.toString(), startLastWeekDate.toString(), summary, this, null);
-        summaryController.getSummary(userid, authToken, "THIS WEEK", dateTime.toString(), weekAgo.toString(), summary, this, null);
+        summaryController.getSummary(userid, authToken, summary, this);
 
-        // get dates for 6 months chart
-        Calendar cal = Calendar.getInstance();  //Get current date/month i.e 27 Feb, 2012
-        cal.add(Calendar.MONTH, -6);   //Go to date, 6 months ago 27 July, 2011
-        cal.set(Calendar.DAY_OF_MONTH, 1);
-        Date sixMonthsAgo = cal.getTime();
-        String formatSixMonthsAgo = formatter.format(sixMonthsAgo);
-        Log.i(LOG_TAG, "6 months ago: " + formatSixMonthsAgo);
-        // fill chart with correct values
-        List<PointValue> values = new ArrayList<>();
-        summaryController.getSummary(userid, authToken, null, dateTime.toString(), formatSixMonthsAgo, null, this, values);
         Log.i(LOG_TAG, "createUI");
     }
 
@@ -163,8 +152,6 @@ public class SummaryFragment extends ListFragment implements OnItemClickListener
         protected Void doInBackground(Void... params) {
             try {
                 Thread.sleep(TASK_DURATION);
-                SummaryController summaryController = new SummaryController();
-                summaryController.summaryTips(userid, authToken, sumFrag);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }

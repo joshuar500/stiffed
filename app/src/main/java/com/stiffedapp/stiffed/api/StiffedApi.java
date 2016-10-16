@@ -1,5 +1,6 @@
 package com.stiffedapp.stiffed.api;
 
+import com.stiffedapp.stiffed.beans.Summary;
 import com.stiffedapp.stiffed.beans.Tip;
 import com.stiffedapp.stiffed.beans.Tips;
 import com.stiffedapp.stiffed.beans.User;
@@ -18,8 +19,8 @@ public interface StiffedApi {
     @POST("/v1/login")
     Call<User> login(@Body RequestBody params);
 
-    @GET("/v1/{uid}/tips/weekly")
-    Call<Tips> weeklyTips(@Path("uid") String uid);
+    @GET("/v1/{uid}/tips/summary")
+    Call<Summary> getSummary(@Path("uid") String uid);
 
     @GET("/v1/{uid}/tips/all")
     Call<Tips> allTips(@Path("uid") String uid);
