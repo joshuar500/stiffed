@@ -5,6 +5,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
@@ -31,13 +32,14 @@ import android.widget.Toast;
 import com.github.clans.fab.FloatingActionButton;
 import com.github.clans.fab.FloatingActionMenu;
 import com.stiffedapp.stiffed.controllers.TipController;
+import com.stiffedapp.stiffed.dummy.DummyContent;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 
 
-public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
+public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, EarningsFragment.OnListFragmentInteractionListener, FeedFragment.OnListFragmentInteractionListener, SummaryFragment.OnListFragmentInteractionListener {
 
     private EditText getAddTip;
     private Double newTip;
@@ -53,6 +55,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        isOnline();
 
         SharedPreferences preferences = getSharedPreferences("AUTH_USER", MODE_PRIVATE);
         userID = preferences.getString("userid", "");
@@ -224,9 +228,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         editor.apply();
     }
 
+    @Override
+    public void onListFragmentInteraction(DummyContent.DummyItem item) {
+        Log.i(LOG_TAG, "onListFragmentInteraction yas queen: ");
+    }
+
     public class MyFragmentPagerAdapter extends FragmentPagerAdapter {
-        final int PAGE_COUNT = 2;
-        private String tabTitles[] = new String[] { "Summary", "Feed" };
+        final int PAGE_COUNT = 3;
+        private String tabTitles[] = new String[] { "Summary", "Earnings", "Feed" };
         private Context context;
 
         public MyFragmentPagerAdapter(FragmentManager fm, Context context) {
@@ -247,7 +256,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     return SummaryFragment.newInstance(0, "Summary", userID, authToken, summaryArrayList);
                 case 1:
                     Log.i(LOG_TAG, "position: " + position);
-                    return FeedFragment.newInstance(0, "Feed");
+                    return EarningsFragment.newInstance(0, "Earnings", userID, authToken);
+                case 2:
+                    Log.i(LOG_TAG, "position: " + position);
+                    return FeedFragment.newInstance(0, "Feed", userID, authToken);
             }
             return null;
         }
@@ -263,10 +275,20 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 case 0:
                     return "Summary";
                 case 1:
+                    return "Earnings";
+                case 2:
                     return "Feed";
             }
             return null;
         }
+    }
+
+    public boolean isOnline() {
+        ConnectivityManager cm =
+                (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        return cm.getActiveNetworkInfo() != null &&
+                cm.getActiveNetworkInfo().isConnectedOrConnecting();
     }
 
 }

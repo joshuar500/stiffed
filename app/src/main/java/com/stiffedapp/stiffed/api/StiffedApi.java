@@ -21,6 +21,12 @@ public interface StiffedApi {
     @GET("/v1/{uid}/tips/weekly")
     Call<Tips> weeklyTips(@Path("uid") String uid);
 
+    @GET("/v1/{uid}/tips/all")
+    Call<Tips> allTips(@Path("uid") String uid);
+
     @POST("/v1/{uid}/tips/add")
     Call<Tip> addTip(@Path("uid") String uid, @Body RequestBody params);
+
+    @POST("/v1/{uid}/tips/bydate")
+    Call<Tips> getTipsByDate(@Path("uid") String uid, @Body RequestBody params);
 }

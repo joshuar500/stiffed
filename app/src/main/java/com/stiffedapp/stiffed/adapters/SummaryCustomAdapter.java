@@ -17,8 +17,6 @@ import com.stiffedapp.stiffed.models.SummaryModel;
 
 public class SummaryCustomAdapter extends ArrayAdapter<SummaryModel>{
 
-    ArrayList<SummaryModel> summary;
-
     public SummaryCustomAdapter(Context context, ArrayList<SummaryModel> summary) {
         super(context, 0, summary);
     }

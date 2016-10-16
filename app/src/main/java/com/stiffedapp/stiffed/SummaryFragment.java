@@ -2,6 +2,7 @@ package com.stiffedapp.stiffed;
 
 
 
+import android.content.Context;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -16,7 +17,19 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 
 import com.stiffedapp.stiffed.controllers.SummaryController;
+import com.stiffedapp.stiffed.dummy.DummyContent;
+import com.stiffedapp.stiffed.models.SummaryModel;
+
+import org.joda.time.DateTime;
+import org.joda.time.Months;
+
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+
+import lecho.lib.hellocharts.model.PointValue;
 
 
 public class SummaryFragment extends ListFragment implements OnItemClickListener {
@@ -32,6 +45,7 @@ public class SummaryFragment extends ListFragment implements OnItemClickListener
     public String[] list = {"hey","2","hey","hey","5","6","hey","4","5","6","3","hey","5","hey"};
     View mheaderView;
     SwipeRefreshLayout swipeRefreshLayout;
+    private SummaryFragment.OnListFragmentInteractionListener mListener;
 
     public SummaryFragment(){}
 
@@ -97,9 +111,42 @@ public class SummaryFragment extends ListFragment implements OnItemClickListener
         mheaderView = getActivity().getLayoutInflater().inflate(R.layout.summary_chart_header, getListView(), false);
         if(mheaderView != null) getListView().addHeaderView(mheaderView);
 
-        // fill the summary list and data chart
+        // get dates for this week
+        DateTime dateTime = new DateTime( new java.util.Date());
+        DateTime weekAgo = dateTime.minusDays( 7 );
+        Log.i(LOG_TAG, "dates for this week: " + dateTime.toString() + "  -  " + weekAgo.toString());
+
+        // get dates for last week
+        Date date = new Date();
+        Calendar c = Calendar.getInstance();
+        c.setTime(date);
+        int i = c.get(Calendar.DAY_OF_WEEK) - c.getFirstDayOfWeek();
+        c.add(Calendar.DATE, -i - 7);
+        Date startLastWeek = c.getTime();
+        c.add(Calendar.DATE, 6);
+        Date endLastWeek = c.getTime();
+        // format last weeks date for python
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+        String startLastWeekDate = formatter.format(startLastWeek);
+        String endLastWeekDate = formatter.format(endLastWeek);
+        Log.i(LOG_TAG, "dates for last week: " + startLastWeekDate + "  -  " + endLastWeekDate);
+
         SummaryController summaryController = new SummaryController();
-        summaryController.summaryTips(userid, authToken, this);
+        // fill the summary list and data chart
+        final ArrayList<SummaryModel> summary = new ArrayList<>();
+        summaryController.getSummary(userid, authToken, "LAST WEEK", endLastWeekDate.toString(), startLastWeekDate.toString(), summary, this, null);
+        summaryController.getSummary(userid, authToken, "THIS WEEK", dateTime.toString(), weekAgo.toString(), summary, this, null);
+
+        // get dates for 6 months chart
+        Calendar cal = Calendar.getInstance();  //Get current date/month i.e 27 Feb, 2012
+        cal.add(Calendar.MONTH, -6);   //Go to date, 6 months ago 27 July, 2011
+        cal.set(Calendar.DAY_OF_MONTH, 1);
+        Date sixMonthsAgo = cal.getTime();
+        String formatSixMonthsAgo = formatter.format(sixMonthsAgo);
+        Log.i(LOG_TAG, "6 months ago: " + formatSixMonthsAgo);
+        // fill chart with correct values
+        List<PointValue> values = new ArrayList<>();
+        summaryController.getSummary(userid, authToken, null, dateTime.toString(), formatSixMonthsAgo, null, this, values);
         Log.i(LOG_TAG, "createUI");
     }
 
@@ -141,5 +188,26 @@ public class SummaryFragment extends ListFragment implements OnItemClickListener
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
     }
 
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        if (context instanceof SummaryFragment.OnListFragmentInteractionListener) {
+            mListener = (SummaryFragment.OnListFragmentInteractionListener) context;
+        } else {
+            throw new RuntimeException(context.toString()
+                    + " must implement OnListFragmentInteractionListener");
+        }
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        mListener = null;
+    }
+
+    public interface OnListFragmentInteractionListener {
+        // TODO: Update argument type and name
+        void onListFragmentInteraction(DummyContent.DummyItem item);
+    }
 
 }
