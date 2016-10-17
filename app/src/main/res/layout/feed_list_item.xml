@@ -1,14 +1,53 @@
 <?xml version="1.0" encoding="utf-8"?>
-<TextView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_gravity="center"
+    android:layout_height="match_parent"
     android:paddingLeft="15dp"
-    android:paddingTop="15dp"
+    android:paddingTop="14dp"
     android:paddingBottom="15dp"
     android:paddingRight="15dp"
-    android:id="@+id/feed_list_item_text"
-    android:background="@drawable/card_background_selector"
-    android:descendantFocusability="afterDescendants"/>
+    android:background="@drawable/border_bottom"
+    >
 
+    <TextView
+        android:fontFamily="sans-serif"
+        android:id="@+id/feed_item_action"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="6pt"
+        android:paddingStart="15dp"
+        android:paddingEnd="6dp"
+        android:text="+ $20.00"
+        android:textAppearance="?android:attr/textAppearanceLarge" />
+
+
+
+    <TextView
+        android:fontFamily="sans-serif"
+        android:id="@+id/feed_item_interact"
+        android:textSize="6pt"
+        android:textAlignment="textEnd"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/tvName"
+        android:layout_toEndOf="@+id/tvName"
+        android:text="Edit"
+        android:paddingEnd="15dp"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:layout_alignParentEnd="true" />
+
+    <TextView
+        android:fontFamily="sans-serif"
+        android:id="@+id/feed_item_date"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="5pt"
+        android:paddingTop="5dp"
+        android:paddingStart="15dp"
+        android:paddingEnd="6dp"
+        android:text="12/23/2016"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:layout_below="@+id/feed_item_action"
+        android:layout_alignParentStart="true" />
+
+</RelativeLayout>

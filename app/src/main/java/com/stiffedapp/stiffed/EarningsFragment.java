@@ -2,33 +2,45 @@ package com.stiffedapp.stiffed;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.support.v4.app.ListFragment;
+import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
+import android.widget.ImageButton;
 import android.widget.ListAdapter;
+import android.widget.TextView;
 
+import com.borax12.materialdaterangepicker.date.DatePickerDialog;
 import com.stiffedapp.stiffed.dummy.DummyContent.DummyItem;
 
-/**
- * A fragment representing a list of Items.
- * <p/>
- * Activities containing this fragment MUST implement the {@link OnListFragmentInteractionListener}
- * interface.
- */
-public class EarningsFragment extends ListFragment implements AdapterView.OnItemClickListener {
+import org.joda.time.DateTime;
 
-    // TODO: Customize parameter argument names
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+import lecho.lib.hellocharts.model.PieChartData;
+import lecho.lib.hellocharts.model.SliceValue;
+import lecho.lib.hellocharts.util.ChartUtils;
+import lecho.lib.hellocharts.view.PieChartView;
+
+
+public class EarningsFragment extends Fragment implements AdapterView.OnItemClickListener, DatePickerDialog.OnDateSetListener {
+
+    private static final String LOG_TAG = EarningsFragment.class.getSimpleName();
+
     private static final String ARG_COLUMN_COUNT = "column-count";
-    // TODO: Customize parameters
     private int mColumnCount = 1;
     private OnListFragmentInteractionListener mListener;
     private String title;
     private String userid;
     private String authToken;
     ListAdapter theAdapter;
+    TextView dateRange;
+    ImageButton dateRangeBtn;
 
     public String[] list = {"10","20","300","400","500","6000"};
 
@@ -68,8 +80,54 @@ public class EarningsFragment extends ListFragment implements AdapterView.OnItem
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.earnings_main_fragment, container, false);
-        theAdapter = new ArrayAdapter<>(getActivity(), R.layout.feed_list_item, list);
-        setListAdapter(theAdapter);
+
+        // TODO: Move this to controller
+        PieChartView pieChartView = (PieChartView) view.findViewById(R.id.earningsPieChart);
+        pieChartView.setCircleFillRatio(1.0f);
+
+        int numValues = 6;
+        List<SliceValue> values = new ArrayList<SliceValue>();
+        for (int i = 0; i < numValues; ++i) {
+            SliceValue sliceValue = new SliceValue((float) Math.random() * 30 + 15, ChartUtils.pickColor());
+            values.add(sliceValue);
+        }
+        PieChartData pieChartData = new PieChartData(values);
+        pieChartView.setPieChartData(pieChartData);
+
+        // get dates for last week
+        Date date = new Date();
+        Calendar c = Calendar.getInstance();
+        c.setTime(date);
+        int i = c.get(Calendar.DAY_OF_WEEK) - c.getFirstDayOfWeek();
+        c.add(Calendar.DATE, -i - 7);
+        Date startLastWeek = c.getTime();
+        c.add(Calendar.DATE, 6);
+        Date endLastWeek = c.getTime();
+        // format last weeks date for python
+        SimpleDateFormat formatter = new SimpleDateFormat("MM/dd/yyyy");
+        String startLastWeekDate = formatter.format(startLastWeek);
+        String endLastWeekDate = formatter.format(endLastWeek);
+
+        // set text
+        dateRange = (TextView) view.findViewById(R.id.date_range);
+        dateRange.setText("Earnings for " + startLastWeekDate + " – " + endLastWeekDate);
+
+        // date range picker
+        dateRangeBtn = (ImageButton) view.findViewById(R.id.date_range_button);
+        dateRangeBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Calendar now = Calendar.getInstance();
+                DatePickerDialog dpd = DatePickerDialog.newInstance(
+                        EarningsFragment.this,
+                        now.get(Calendar.YEAR),
+                        now.get(Calendar.MONTH),
+                        now.get(Calendar.DAY_OF_MONTH)
+                );
+                dpd.show(getActivity().getFragmentManager(), "Datepickerdialog");
+            }
+        });
+
         return view;
     }
 
@@ -96,16 +154,17 @@ public class EarningsFragment extends ListFragment implements AdapterView.OnItem
 
     }
 
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p/>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
+    @Override
+    public void onDateSet(DatePickerDialog view, int year, int monthOfYear, int dayOfMonth, int yearEnd, int monthOfYearEnd, int dayOfMonthEnd) {
+        int sYear = year;
+        int sMonth = monthOfYear+1;
+        int sDay = dayOfMonth;
+        int eYear = yearEnd;
+        int eMonth = monthOfYearEnd+1;
+        int eDay = dayOfMonthEnd;
+        dateRange.setText("Earnings for " + sMonth + "/" + sDay + "/" + sYear + " – " + eMonth + "/" +  eDay + "/" + eYear);
+    }
+
     public interface OnListFragmentInteractionListener {
         // TODO: Update argument type and name
         void onListFragmentInteraction(DummyItem item);

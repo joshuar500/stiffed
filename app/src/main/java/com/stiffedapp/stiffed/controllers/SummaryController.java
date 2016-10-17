@@ -2,44 +2,31 @@ package com.stiffedapp.stiffed.controllers;
 
 import android.graphics.Color;
 import android.util.Log;
-import android.widget.ArrayAdapter;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.stiffedapp.stiffed.R;
 import com.stiffedapp.stiffed.SummaryFragment;
-import com.stiffedapp.stiffed.adapters.SummaryCustomAdapter;
+import com.stiffedapp.stiffed.adapters.SummaryAdapter;
 import com.stiffedapp.stiffed.api.StiffedApi;
 import com.stiffedapp.stiffed.beans.Summary;
 import com.stiffedapp.stiffed.beans.Tip;
-import com.stiffedapp.stiffed.beans.Tips;
-import com.stiffedapp.stiffed.beans.User;
 import com.stiffedapp.stiffed.models.SummaryModel;
 import com.stiffedapp.stiffed.net.ServiceGenerator;
-
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
-import org.joda.time.format.DateTimeFormat;
-import org.json.JSONObject;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 
 import lecho.lib.hellocharts.model.Line;
 import lecho.lib.hellocharts.model.LineChartData;
 import lecho.lib.hellocharts.model.PointValue;
 import lecho.lib.hellocharts.view.LineChartView;
-import okhttp3.MediaType;
-import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-
-import static android.R.attr.format;
 
 public class SummaryController {
     private StiffedApi stiffedApi;
@@ -58,9 +45,6 @@ public class SummaryController {
         getSummaryCall.enqueue(new Callback<Summary>() {
             @Override
             public void onResponse(Call<Summary> call, Response<Summary> response) {
-
-                Log.d(LOG_TAG, "response: " + response.body());
-
                 if(response.code() != 200) {
                     Toast.makeText(listFragment.getActivity().getBaseContext(), "Something is wrong (cant get tips)", Toast.LENGTH_SHORT).show();
                     // TODO: Close application
@@ -81,102 +65,115 @@ public class SummaryController {
                 if (thisWeeksTips != null && summary != null) {
                     summary.add(new SummaryModel("This Week", thisWeeksTips));
                     summary.add(new SummaryModel("Last Week", lastWeeksTips));
-                    SummaryCustomAdapter adapter = new SummaryCustomAdapter(listFragment.getContext(), summary);
+                    SummaryAdapter adapter = new SummaryAdapter(listFragment.getContext(), summary);
                     listFragment.setListAdapter(adapter);
                 }
 
-                // populate chart
-                //TODO: this needs to be 6 months, currently doing every tip
-                // get dates for 6 months chart
+                // get last 6 months
+                List<Tip> lastMonth = response.body().getLastMonth();
+                List<Tip> twoMonth = response.body().getTwoMonth();
+                List<Tip> threeMonth = response.body().getThreeMonth();
+                List<Tip> fourMonth = response.body().getFourMonth();
+                List<Tip> fiveMonth = response.body().getFiveMonth();
+                List<Tip> sixMonth = response.body().getSixMonth();
+
+                // variables for added tips
+                Double mOne = 0.0;
+                Double mTwo = 0.0;
+                Double mThree = 0.0;
+                Double mFour = 0.0;
+                Double mFive = 0.0;
+                Double mSix = 0.0;
+
+                for (Tip tip : lastMonth) {
+                    mOne += tip.getAmount();
+                }
+                for (Tip tip : twoMonth) {
+                    mTwo += tip.getAmount();
+                }
+                for (Tip tip : threeMonth) {
+                    mThree += tip.getAmount();
+                }
+                for (Tip tip : fourMonth) {
+                    mFour += tip.getAmount();
+                }
+                for (Tip tip : fiveMonth) {
+                    mFive += tip.getAmount();
+                }
+                for (Tip tip : sixMonth) {
+                    mSix += tip.getAmount();
+                }
+
+                // get months
+                // TODO: probably want to do this server side in the future
                 Calendar cal = Calendar.getInstance();  //Get current date/month i.e 27 Feb, 2012
-                cal.add(Calendar.MONTH, -6);   //Go to date, 6 months ago 27 July, 2011
+                SimpleDateFormat formatter = new SimpleDateFormat("MMM");
+
+                cal.add(Calendar.MONTH, 0);
                 cal.set(Calendar.DAY_OF_MONTH, 1);
-                Date sixMonthsAgo = cal.getTime();
-                SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
-                String formatSixMonthsAgo = formatter.format(sixMonthsAgo);
-                Log.i(LOG_TAG, "6 months ago: " + formatSixMonthsAgo);
+                Date m1Date = cal.getTime();
+                cal.add(Calendar.MONTH, -1);
+                cal.set(Calendar.DAY_OF_MONTH, 1);
+                Date m2Date = cal.getTime();
+                cal.add(Calendar.MONTH, -1);
+                cal.set(Calendar.DAY_OF_MONTH, 1);
+                Date m3Date = cal.getTime();
+                cal.add(Calendar.MONTH, -1);
+                cal.set(Calendar.DAY_OF_MONTH, 1);
+                Date m4Date = cal.getTime();
+                cal.add(Calendar.MONTH, -1);
+                cal.set(Calendar.DAY_OF_MONTH, 1);
+                Date m5Date = cal.getTime();
+                cal.add(Calendar.MONTH, -1);
+                cal.set(Calendar.DAY_OF_MONTH, 1);
+                Date m6Date = cal.getTime();
+
+                String m1Name = formatter.format(m1Date);
+                String m2Name = formatter.format(m2Date);
+                String m3Name = formatter.format(m3Date);
+                String m4Name = formatter.format(m4Date);
+                String m5Name = formatter.format(m5Date);
+                String m6Name = formatter.format(m6Date);
+
+                // update month names for summary graph
+                TextView tvMonthOne = (TextView) listFragment.getActivity().findViewById(R.id.tvMonthOne);
+                TextView tvMonthTwo = (TextView) listFragment.getActivity().findViewById(R.id.tvMonthTwo);
+                TextView tvMonthThree = (TextView) listFragment.getActivity().findViewById(R.id.tvMonthThree);
+                TextView tvMonthFour = (TextView) listFragment.getActivity().findViewById(R.id.tvMonthFour);
+                TextView tvMonthFive = (TextView) listFragment.getActivity().findViewById(R.id.tvMonthFive);
+                TextView tvMonthSix = (TextView) listFragment.getActivity().findViewById(R.id.tvMonthSix);
+                tvMonthOne.setText(m6Name.substring(0, 3).toUpperCase());
+                tvMonthTwo.setText(m5Name.substring(0, 3).toUpperCase());
+                tvMonthThree.setText(m4Name.substring(0, 3).toUpperCase());
+                tvMonthFour.setText(m3Name.substring(0, 3).toUpperCase());
+                tvMonthFive.setText(m2Name.substring(0, 3).toUpperCase());
+                tvMonthSix.setText(m1Name.substring(0, 3).toUpperCase());
+
                 // fill chart with correct values
                 List<PointValue> values = new ArrayList<>();
-                if (values != null) {
 
-                    int i = 0;
-                    Double january = 0.0;
-                    Double february = 0.0;
-                    Double march = 0.0;
-                    Double april = 0.0;
-                    Double may = 0.0;
-                    Double june = 0.0;
-                    Double july = 0.0;
-                    Double august = 0.0;
-                    Double september = 0.0;
-                    Double october = 0.0;
-                    Double november = 0.0;
-                    Double december = 0.0;
-                    for (Tip tip : thisWeek) {
-                        // create dates to check
-                        Date date = DateTime.parse(tip.getTipDate(), DateTimeFormat.forPattern("EEE, dd MMM YYYY HH:mm:ss zzz").withLocale(Locale.US)).toDate();
-                        DateTime dateTime = new DateTime(date);
-                        if (dateTime.getMonthOfYear() == 1) {
-                            january += tip.getAmount();
-                            Log.i(LOG_TAG, "january tips: " + january);
-                        } else if (dateTime.getMonthOfYear() == 2) {
-                            february += tip.getAmount();
-                            Log.i(LOG_TAG, "february tips: " + february);
-                        } else if (dateTime.getMonthOfYear() == 3) {
-                            march += tip.getAmount();
-                            Log.i(LOG_TAG, "march tips: " + march);
-                        } else if (dateTime.getMonthOfYear() == 4) {
-                            april += tip.getAmount();
-                            Log.i(LOG_TAG, "april tips: " + april);
-                        } else if (dateTime.getMonthOfYear() == 5) {
-                            may += tip.getAmount();
-                            Log.i(LOG_TAG, "may tips: " + may);
-                        } else if (dateTime.getMonthOfYear() == 6) {
-                            june += tip.getAmount();
-                            Log.i(LOG_TAG, "june tips: " + june);
-                        } else if (dateTime.getMonthOfYear() == 7) {
-                            july += tip.getAmount();
-                            Log.i(LOG_TAG, "july tips: " + july);
-                        } else if (dateTime.getMonthOfYear() == 8) {
-                            august += tip.getAmount();
-                            Log.i(LOG_TAG, "august tips: " + august);
-                        } else if (dateTime.getMonthOfYear() == 9) {
-                            september += tip.getAmount();
-                            Log.i(LOG_TAG, "september tips: " + september);
-                        } else if (dateTime.getMonthOfYear() == 10) {
-                            october += tip.getAmount();
-                            Log.i(LOG_TAG, "october tips: " + october);
-                        } else if (dateTime.getMonthOfYear() == 11) {
-                            november += tip.getAmount();
-                            Log.i(LOG_TAG, "november tips: " + november);
-                        } else if (dateTime.getMonthOfYear() == 12) {
-                            december += tip.getAmount();
-                            Log.i(LOG_TAG, "december tips: " + december);
-                        }
-                    }
-                    // for now, these are updated manually
-                    values.add(new PointValue(6, october.floatValue()));
-                    values.add(new PointValue(5, september.floatValue()));
-                    values.add(new PointValue(4, august.floatValue()));
-                    values.add(new PointValue(3, july.floatValue()));
-                    values.add(new PointValue(2, june.floatValue()));
-                    values.add(new PointValue(1, may.floatValue()));
-                    values.add(new PointValue(0, april.floatValue()));
+                // for now, these are updated manually
+                values.add(new PointValue(1, mSix.floatValue()));
+                values.add(new PointValue(2, mFive.floatValue()));
+                values.add(new PointValue(3, mFour.floatValue()));
+                values.add(new PointValue(4, mThree.floatValue()));
+                values.add(new PointValue(5, mTwo.floatValue()));
+                values.add(new PointValue(6, mOne.floatValue()));
 
-                    Line line = new Line(values).setColor(Color.parseColor("#8aacb8")).setCubic(false).setFilled(true).setHasPoints(false);
-                    List<Line> lines = new ArrayList<>();
-                    lines.add(line);
+                Line line = new Line(values).setColor(Color.parseColor("#8aacb8")).setCubic(false).setFilled(true).setHasPoints(false);
+                List<Line> lines = new ArrayList<>();
+                lines.add(line);
 
-                    LineChartData data = new LineChartData();
-                    data.setLines(lines);
-                    LineChartView chartView = (LineChartView) listFragment.getActivity().findViewById(R.id.summary_chart);
-                    chartView.setLineChartData(data);
-                }
+                LineChartData data = new LineChartData();
+                data.setLines(lines);
+                LineChartView chartView = (LineChartView) listFragment.getActivity().findViewById(R.id.summary_chart);
+                chartView.setLineChartData(data);
+
             }
 
             @Override
             public void onFailure(Call<Summary> call, Throwable t) {
-                Log.i(LOG_TAG, "getSummary Failed to make call: " + call.toString());
+                Log.e(LOG_TAG, "getSummary Failed to make call: " + call.toString());
                 t.printStackTrace();
             }
         });

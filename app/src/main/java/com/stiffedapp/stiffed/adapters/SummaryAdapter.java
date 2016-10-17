@@ -15,12 +15,13 @@ import com.stiffedapp.stiffed.R;
 import com.stiffedapp.stiffed.controllers.SummaryController;
 import com.stiffedapp.stiffed.models.SummaryModel;
 
-public class SummaryCustomAdapter extends ArrayAdapter<SummaryModel>{
+public class SummaryAdapter extends ArrayAdapter<SummaryModel>{
 
-    public SummaryCustomAdapter(Context context, ArrayList<SummaryModel> summary) {
+    public SummaryAdapter(Context context, ArrayList<SummaryModel> summary) {
         super(context, 0, summary);
     }
 
+    @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         // Get the data item for this position
         SummaryModel sModel = getItem(position);

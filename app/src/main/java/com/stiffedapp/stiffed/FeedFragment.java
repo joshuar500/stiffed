@@ -12,6 +12,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListAdapter;
 
+import com.stiffedapp.stiffed.controllers.FeedController;
 import com.stiffedapp.stiffed.controllers.SummaryController;
 import com.stiffedapp.stiffed.controllers.TipController;
 import com.stiffedapp.stiffed.dummy.DummyContent;
@@ -72,8 +73,8 @@ public class FeedFragment extends ListFragment implements AdapterView.OnItemClic
     private void createUI(){
         setListAdapter(null);
         // fill the feed list and data chart
-        TipController tipController = new TipController();
-        tipController.getAllTips(userid, authToken, this);
+        FeedController feedController = new FeedController();
+        feedController.getFeed(userid, authToken, this);
         Log.i(LOG_TAG, "createUI");
     }
 

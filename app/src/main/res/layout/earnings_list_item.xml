@@ -9,6 +9,6 @@
     android:paddingBottom="15dp"
     android:paddingRight="15dp"
     android:id="@+id/earnings_list_item_text"
-    android:background="@drawable/card_background_selector"
+    android:background="@drawable/border_bottom"
     android:descendantFocusability="afterDescendants"/>
 

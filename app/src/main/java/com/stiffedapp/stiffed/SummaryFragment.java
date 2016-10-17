@@ -96,14 +96,12 @@ public class SummaryFragment extends ListFragment implements OnItemClickListener
     }
 
     private void initiateRefresh() {
-        Log.i(LOG_TAG, "initiateRefresh");
         new UpdateUITask(this).execute();
     }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        Log.i(LOG_TAG, "onActivityCreated");
     }
 
     private void createUI(){
@@ -114,7 +112,6 @@ public class SummaryFragment extends ListFragment implements OnItemClickListener
         // get dates for this week
         DateTime dateTime = new DateTime( new java.util.Date());
         DateTime weekAgo = dateTime.minusDays( 7 );
-        Log.i(LOG_TAG, "dates for this week: " + dateTime.toString() + "  -  " + weekAgo.toString());
 
         // get dates for last week
         Date date = new Date();
@@ -129,14 +126,11 @@ public class SummaryFragment extends ListFragment implements OnItemClickListener
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
         String startLastWeekDate = formatter.format(startLastWeek);
         String endLastWeekDate = formatter.format(endLastWeek);
-        Log.i(LOG_TAG, "dates for last week: " + startLastWeekDate + "  -  " + endLastWeekDate);
 
         SummaryController summaryController = new SummaryController();
         // fill the summary list and data chart
         final ArrayList<SummaryModel> summary = new ArrayList<>();
         summaryController.getSummary(userid, authToken, summary, this);
-
-        Log.i(LOG_TAG, "createUI");
     }
 
     private class UpdateUITask extends AsyncTask<Void, Void, Void> {
@@ -167,7 +161,6 @@ public class SummaryFragment extends ListFragment implements OnItemClickListener
     }
 
     private void onRefreshComplete() {
-        Log.i(LOG_TAG, "onRefreshComplete");
         swipeRefreshLayout.setRefreshing(false);
     }
 

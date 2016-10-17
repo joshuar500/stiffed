@@ -22,6 +22,12 @@ public interface StiffedApi {
     @GET("/v1/{uid}/tips/summary")
     Call<Summary> getSummary(@Path("uid") String uid);
 
+    @GET("/v1/{uid}/earnings")
+    Call<Tips> getEarnings(@Path("uid") String uid);
+
+    @GET("/v1/{uid}/feed")
+    Call<Tips> getFeed(@Path("uid") String uid);
+
     @GET("/v1/{uid}/tips/all")
     Call<Tips> allTips(@Path("uid") String uid);
 
