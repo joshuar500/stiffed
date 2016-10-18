@@ -55,11 +55,21 @@ public class SummaryController {
 
                 Double thisWeeksTips = 0.0;
                 for (Tip tip : thisWeek) {
-                    thisWeeksTips += tip.getAmount();
+                    if(tip.getAmount() != null) {
+                        thisWeeksTips += tip.getAmount();
+                    }
+                    if(tip.getTipOutAmount() != null) {
+                        thisWeeksTips -= tip.getTipOutAmount();
+                    }
                 }
                 Double lastWeeksTips = 0.0;
                 for (Tip tip : lastWeek) {
-                    lastWeeksTips += tip.getAmount();
+                    if(tip.getAmount() != null) {
+                        lastWeeksTips += tip.getAmount();
+                    }
+                    if(tip.getTipOutAmount() != null) {
+                        lastWeeksTips -= tip.getTipOutAmount();
+                    }
                 }
 
                 if (thisWeeksTips != null && summary != null) {

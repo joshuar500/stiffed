@@ -16,10 +16,10 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight=".2"
-            android:text="Tip Amount:" />
+            android:text="Tip Out Amount:" />
 
         <EditText
-            android:id="@+id/et_addedtips"
+            android:id="@+id/et_tipout"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight=".8"
@@ -41,13 +41,12 @@
             android:text="Date:" />
 
         <DatePicker
-            android:id="@+id/dp_addtips"
+            android:id="@+id/dp_tipout"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight=".8"
             android:datePickerMode="spinner"
             android:calendarViewShown="false"/>
-            />
     </LinearLayout>
 
 </LinearLayout>

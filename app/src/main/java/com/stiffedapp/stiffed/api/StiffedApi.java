@@ -34,6 +34,9 @@ public interface StiffedApi {
     @POST("/v1/{uid}/tips/add")
     Call<Tip> addTip(@Path("uid") String uid, @Body RequestBody params);
 
+    @POST("/v1/{uid}/tips/out")
+    Call<Tip> tipOut(@Path("uid") String uid, @Body RequestBody params);
+
     @POST("/v1/{uid}/tips/bydate")
     Call<Tips> getTipsByDate(@Path("uid") String uid, @Body RequestBody params);
 }

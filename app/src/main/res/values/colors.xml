@@ -6,4 +6,5 @@
     <color name="colorWhite">#FFFFFF</color>
     <color name="progressbar">#fff</color>
     <color name="secondprogressbar">#fff</color>
+    <color name="date_picker_text_color">#AC3120</color>
 </resources>

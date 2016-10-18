@@ -48,7 +48,12 @@ public class FeedController {
                 List<Tip> tips = response.body().getTips();
 
                 for (Tip tip : tips) {
-                    feedArray.add(new FeedModel(tip.getTipDate(), tip.getAmount().toString(), "edit"));
+                    if (tip.getAmount() != null) {
+                        feedArray.add(new FeedModel(tip.getTipDate(), tip.getAmount().toString(), "edit"));
+                    }
+                    if (tip.getTipOutAmount() != null) {
+                        feedArray.add(new FeedModel(tip.getTipDate(), tip.getTipOutAmount().toString(), "delete"));
+                    }
                 }
 
                 FeedAdapter adapter = new FeedAdapter(listFragment.getContext(), feedArray);

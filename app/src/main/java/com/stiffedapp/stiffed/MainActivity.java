@@ -42,7 +42,9 @@ import java.util.Calendar;
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, EarningsFragment.OnListFragmentInteractionListener, FeedFragment.OnListFragmentInteractionListener, SummaryFragment.OnListFragmentInteractionListener {
 
     private EditText getAddTip;
+    private EditText getTipOut;
     private Double newTip;
+    private Double tipOut;
     private DatePicker getDatePicker;
     private static final int REQUEST_GET_USER_ID = 0;
     private String userID;
@@ -90,10 +92,19 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         // Floating action button with menu using 3rd party library
         FloatingActionMenu fam = (FloatingActionMenu) findViewById(R.id.fab_menu);
         FloatingActionButton fab1 = new FloatingActionButton(context);
-        fab1.setLabelText("Add Tip");
+        FloatingActionButton fab2 = new FloatingActionButton(context);
+        FloatingActionButton fab3 = new FloatingActionButton(context);
+        fab1.setLabelText("Tip");
+        fab2.setLabelText("Tip Out");
+        fab3.setLabelText("Income");
         fab1.setImageResource(R.drawable.ic_fab_add);
+        fab2.setImageResource(R.drawable.ic_fab_add);
+        fab3.setImageResource(R.drawable.ic_fab_add);
         fam.addMenuButton(fab1);
+        fam.addMenuButton(fab2);
+        fam.addMenuButton(fab3);
 
+        // Add tips button
         fab1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -137,6 +148,61 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 });
                 AlertDialog dialog = alert.create();
                 dialog.show();
+            }
+        });
+
+        // Tip out button
+        fab2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                LayoutInflater inflater = getLayoutInflater();
+                final View alertLayout = inflater.inflate(R.layout.layout_custom_tipout, null);
+
+                final AlertDialog.Builder alert = new AlertDialog.Builder(MainActivity.this);
+                alert.setView(alertLayout);
+
+                alert.setCancelable(false);
+                alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Toast.makeText(getBaseContext(), "Cancel clicked", Toast.LENGTH_SHORT).show();
+                    }
+                });
+
+                alert.setPositiveButton("Tip Out", new DialogInterface.OnClickListener() {
+
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                        getTipOut = (EditText) alertLayout.findViewById(R.id.et_tipout);
+                        tipOut = Double.parseDouble(getTipOut.getText().toString());
+
+                        // get date and format it to custom string
+                        getDatePicker = (DatePicker) alertLayout.findViewById(R.id.dp_tipout);
+                        int day = getDatePicker.getDayOfMonth();
+                        int month = getDatePicker.getMonth();
+                        int year = getDatePicker.getYear();
+                        Calendar calendar = Calendar.getInstance();
+                        calendar.set(year, month, day);
+                        SimpleDateFormat formatDate = new SimpleDateFormat("yyyy-MM-dd");
+                        final String dateString = formatDate.format(calendar.getTime());
+
+                        TipController tipController = new TipController();
+                        tipController.tipOut(userID, tipOut, dateString, MainActivity.this);
+                        vpPager.getAdapter().notifyDataSetChanged();
+                    }
+                });
+                AlertDialog dialog = alert.create();
+                dialog.show();
+            }
+        });
+
+        // Add income button
+        fab3.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
             }
         });
 

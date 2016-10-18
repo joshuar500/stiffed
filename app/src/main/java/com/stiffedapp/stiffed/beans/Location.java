@@ -2,10 +2,6 @@ package com.stiffedapp.stiffed.beans;
 
 import java.util.List;
 
-/**
- * Created by SPACE on 7/19/2016.
- */
-
 public class Location {
     public String city;
     public String state;

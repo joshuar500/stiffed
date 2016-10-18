@@ -74,4 +74,31 @@ public class TipController {
             }
         });
     }
+
+    public void tipOut(String userID, final Double amount, String date, final MainActivity activity) {
+        HashMap<String, Object> credentials = new HashMap<>();
+        credentials.put("amount", amount);
+        credentials.put("tip_date", date);
+
+        RequestBody body = RequestBody.create(MediaType.parse("application/json; charset=utf-8"),(new JSONObject(credentials)).toString());
+        Call<Tip> tipOut = stiffedApi.tipOut(userID, body);
+
+        tipOut.enqueue(new Callback<Tip>() {
+            @Override
+            public void onResponse(Call<Tip> call, Response<Tip> response) {
+
+                // check if success
+                if(response.code() == 200) {
+                    Toast.makeText(activity.getBaseContext(), "Tipped out: " + amount, Toast.LENGTH_LONG).show();
+                } else {
+                    Toast.makeText(activity.getBaseContext(), "Something went wrong", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Tip> call, Throwable t) {
+                Toast.makeText(activity.getBaseContext(), "Please make sure you are connected to the Internet", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
 }
